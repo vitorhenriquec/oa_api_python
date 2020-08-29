@@ -10,7 +10,6 @@ from .Auth import Auth
 class UsuarioService():
     usuario_schema = UsuarioSchema()
 
-    @Auth.
     def listar(self):
         return self.usuario_schema.jsonify(Usuario.query.all(), many=True)
 
@@ -35,7 +34,7 @@ class UsuarioService():
 
         novoUsuario = Usuario(usuario)
         self.salvar(novoUsuario)
-        return self.usuario_schema.jsonify(usuario), 201
+        return self.usuario_schema.jsonify(usuario)
 
     def gerar_token(self, tipo_cadastro, email):
         if tipo_cadastro == 2 or tipo_cadastro == 3:
@@ -82,3 +81,14 @@ class UsuarioService():
 
     def buscar_id(self, id):
         return Usuario.query.filter(Usuario.id == id).first()
+
+    def minha_info(self, request):
+        dados = request.json
+
+        if("id" not in dados):
+            raise Exception("Identificador não informado")
+
+        usuarioEncontrado = self.buscar_id(dados['id'])
+
+        if not usuarioEncontrado:
+            raise Exception("Usuário não encontrado")

@@ -1,9 +1,8 @@
 import jwt
 import os
 import datetime
-from flask import json, request, Response, g
+from flask import json, request, Response
 from functools import wraps
-from .UsuarioService import UsuarioService
 
 
 class Auth():
@@ -48,21 +47,21 @@ class Auth():
     def auth_required(func):
         @wraps(func)
         def decorated_auth(*args, **kwargs):
-            if 'api-token' not in request.headers:
+            cabecalho = request.headers["Authorization"]
+            if not cabecalho:
                 return Response(
                     mimetype="application/json",
                     response=json.dumps(
-                        {'error': 'Authentication token is not available, please login to get one'}),
-                    status=400
+                        {'error': 'Token não informada'}),
+                    status=401
                 )
-            token = request.headers.get('api-token')
-            data = Auth.decode_token(token)
+            token = cabecalho.split(" ")[1]
+            data = Auth.decodificar_token(token)
             if data['error']:
                 return Response(
                     mimetype="application/json",
                     response=json.dumps(data['error']),
                     status=400
                 )
-            g.id = data['data']['id']
             return func(*args, **kwargs)
         return decorated_auth
