@@ -34,4 +34,4 @@ def logar():
 @bp_usuarios.route('/usuario/minha_info', methods=['POST'])
 @Auth.auth_required
 def info():
-    return {'error': 'Informação não achada'}, 200
+    return {'error': 'Informação não encontrada'}, 200
